@@ -6,8 +6,10 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 
+const OFFERS_COUNT = 5; // данные для главной страницы
+
 root.render(
   <React.StrictMode>
-    <App />
+    <App offersCount={OFFERS_COUNT} />
   </React.StrictMode>,
 );
