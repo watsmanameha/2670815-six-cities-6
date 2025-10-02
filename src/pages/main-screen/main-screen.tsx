@@ -3,13 +3,22 @@
  * Временная крупная монолитная версия, созданная на основе разметки из markup/main.html.
  * В дальнейшем будет декомпозирован на подкомпоненты (хедер, список городов, карточка предложения, сортировка, карта и т.д.).
  */
+import type { FC } from 'react';
 import PlaceCard from '../place-card/place-card';
 
 type MainScreenProps = {
   offersCount: number;
 };
 
-function MainScreen({ offersCount }: MainScreenProps): JSX.Element {
+const MainScreen: FC<MainScreenProps> = ({ offersCount }) => {
+  const offers = [
+    { id: 1, isPremium: true, imageSrc: 'img/apartment-01.jpg', price: 120, rating: 4, title: 'Beautiful & luxurious apartment at great location', type: 'Apartment' },
+    { id: 2, isBookmarked: true, imageSrc: 'img/room.jpg', price: 80, rating: 4, title: 'Wood and stone place', type: 'Room' },
+    { id: 3, imageSrc: 'img/apartment-02.jpg', price: 132, rating: 4, title: 'Canal View Prinsengracht', type: 'Apartment' },
+    { id: 4, isPremium: true, imageSrc: 'img/apartment-03.jpg', price: 180, rating: 5, title: 'Nice, cozy, warm big bed apartment', type: 'Apartment' },
+    { id: 5, isBookmarked: true, imageSrc: 'img/room.jpg', price: 80, rating: 4, title: 'Wood and stone place', type: 'Room' },
+  ];
+
   return (
     <div className="page page--gray page--main">
       <header className="header">
@@ -123,45 +132,18 @@ function MainScreen({ offersCount }: MainScreenProps): JSX.Element {
                 </ul>
               </form>
               <div className="cities__places-list places__list tabs__content">
-                <PlaceCard
-                  isPremium
-                  imageSrc="img/apartment-01.jpg"
-                  price={120}
-                  rating={4}
-                  title="Beautiful & luxurious apartment at great location"
-                  type="Apartment"
-                />
-                <PlaceCard
-                  isBookmarked
-                  imageSrc="img/room.jpg"
-                  price={80}
-                  rating={4}
-                  title="Wood and stone place"
-                  type="Room"
-                />
-                <PlaceCard
-                  imageSrc="img/apartment-02.jpg"
-                  price={132}
-                  rating={4}
-                  title="Canal View Prinsengracht"
-                  type="Apartment"
-                />
-                <PlaceCard
-                  isPremium
-                  imageSrc="img/apartment-03.jpg"
-                  price={180}
-                  rating={5}
-                  title="Nice, cozy, warm big bed apartment"
-                  type="Apartment"
-                />
-                <PlaceCard
-                  isBookmarked
-                  imageSrc="img/room.jpg"
-                  price={80}
-                  rating={4}
-                  title="Wood and stone place"
-                  type="Room"
-                />
+                {offers.map((o) => (
+                  <PlaceCard
+                    key={o.id}
+                    isPremium={o.isPremium}
+                    isBookmarked={o.isBookmarked}
+                    imageSrc={o.imageSrc}
+                    price={o.price}
+                    rating={o.rating}
+                    title={o.title}
+                    type={o.type}
+                  />
+                ))}
               </div>
             </section>
             <div className="cities__right-section">
@@ -172,6 +154,6 @@ function MainScreen({ offersCount }: MainScreenProps): JSX.Element {
       </main>
     </div>
   );
-}
+};
 
 export default MainScreen;

@@ -1,3 +1,4 @@
+import type { FC } from 'react';
 import MainScreen from '../main-screen/main-screen';
 
 type AppProps = {
@@ -5,6 +6,6 @@ type AppProps = {
 };
 
 // App – корневой компонент приложения. Пока рендерит только главную страницу.
-export default function App({ offersCount }: AppProps): JSX.Element {
-  return <MainScreen offersCount={offersCount} />;
-}
+const App: FC<AppProps> = ({ offersCount }) => <MainScreen offersCount={offersCount} />;
+
+export default App;
