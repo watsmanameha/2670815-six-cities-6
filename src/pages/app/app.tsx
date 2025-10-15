@@ -23,7 +23,7 @@ const App: FC<AppProps> = ({ offersCount, offers }) => (
         path="/favorites"
         element={
           <PrivateRoute isAuthorized={false}>
-            <FavoritesScreen />
+            <FavoritesScreen offers={offers} />
           </PrivateRoute>
         }
       />
