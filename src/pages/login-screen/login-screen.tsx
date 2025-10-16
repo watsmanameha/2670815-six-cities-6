@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { Link } from 'react-router-dom';
 
 const LoginScreen: FC = () => (
   <div className="page page--gray page--login">
@@ -6,7 +7,7 @@ const LoginScreen: FC = () => (
       <div className="container">
         <div className="header__wrapper">
           <div className="header__left">
-            <a className="header__logo-link" href="main.html">
+            <Link className="header__logo-link" to="/">
               <img
                 className="header__logo"
                 src="img/logo.svg"
@@ -14,7 +15,7 @@ const LoginScreen: FC = () => (
                 width="81"
                 height="41"
               />
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -55,9 +56,9 @@ const LoginScreen: FC = () => (
         </section>
         <section className="locations locations--login locations--current">
           <div className="locations__item">
-            <a className="locations__item-link" href="#">
+            <Link className="locations__item-link" to="/">
               <span>Amsterdam</span>
-            </a>
+            </Link>
           </div>
         </section>
       </div>
