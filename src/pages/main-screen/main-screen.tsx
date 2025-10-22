@@ -118,7 +118,7 @@ const MainScreen: FC<MainScreenProps> = ({ offersCount, offers }) => {
                   <svg className="places__sorting-arrow" width="7" height="4">
                     <use xlinkHref="#icon-arrow-select"></use>
                   </svg>
-                  </span>
+                </span>
                 <ul className="places__options places__options--custom places__options--opened">
                   <li className="places__option places__option--active" tabIndex={0}>
                     Popular
