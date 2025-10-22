@@ -13,7 +13,7 @@ const OfferScreen: FC = () => {
     return <NotFoundScreen />;
   }
 
-  const images = offer.images && offer.images.length > 0 ? offer.images : [offer.previewImage];
+  const images = [offer.previewImage];
   const ratingWidth = getRatingWidth(offer.rating);
 
   return (
@@ -77,7 +77,10 @@ const OfferScreen: FC = () => {
               )}
               <div className="offer__name-wrapper">
                 <h1 className="offer__name">{offer.title}</h1>
-                <button className="offer__bookmark-button button" type="button">
+                <button
+                  className={`offer__bookmark-button ${offer.isFavorite ? 'offer__bookmark-button--active' : ''} button`}
+                  type="button"
+                >
                   <svg className="offer__bookmark-icon" width="31" height="33">
                     <use xlinkHref="#icon-bookmark"></use>
                   </svg>
@@ -93,11 +96,11 @@ const OfferScreen: FC = () => {
               </div>
               <ul className="offer__features">
                 <li className="offer__feature offer__feature--entire">{offer.type}</li>
-                {offer.bedrooms !== undefined && (
-                  <li className="offer__feature offer__feature--bedrooms">{offer.bedrooms} Bedrooms</li>
+                {3 !== undefined && (
+                  <li className="offer__feature offer__feature--bedrooms">3 Bedrooms</li>
                 )}
-                {offer.maxAdults !== undefined && (
-                  <li className="offer__feature offer__feature--adults">Max {offer.maxAdults} adults</li>
+                {4 !== undefined && (
+                  <li className="offer__feature offer__feature--adults">Max 4 adults</li>
                 )}
               </ul>
               <div className="offer__price">
@@ -107,16 +110,18 @@ const OfferScreen: FC = () => {
               <div className="offer__inside">
                 <h2 className="offer__inside-title">What&apos;s inside</h2>
                 <ul className="offer__inside-list">
-                  {(offer.goods ?? []).map((g) => (
-                    <li className="offer__inside-item" key={g}>{g}</li>
-                  ))}
+                  <li className="offer__inside-item">Wi-Fi</li>
+                  <li className="offer__inside-item">Washing machine</li>
+                  <li className="offer__inside-item">Towels</li>
+                  <li className="offer__inside-item">Heating</li>
+                  <li className="offer__inside-item">Coffee machine</li>
                 </ul>
               </div>
               <div className="offer__host">
                 <h2 className="offer__host-title">Meet the host</h2>
                 <div className="offer__host-user user">
                   <div className="offer__avatar-wrapper offer__avatar-wrapper--pro user__avatar-wrapper">
-                    <img className="offer__avatar user__avatar" src="img/avatar-angelina.jpg" width="74" height="74" alt="Host avatar" />
+                  <img className="offer__avatar user__avatar" src="img/avatar-angelina.jpg" width="74" height="74" alt="Host avatar" />
                   </div>
                   <span className="offer__user-name"> Angelina </span>
                   <span className="offer__user-status"> Pro </span>
@@ -158,7 +163,6 @@ const OfferScreen: FC = () => {
           <section className="near-places places">
             <h2 className="near-places__title">Other places in the neighbourhood</h2>
             <div className="near-places__list places__list">
-              {/* Соседние карточки перенесены из макета как есть */}
               <article className="near-places__card place-card">
                 <div className="near-places__image-wrapper place-card__image-wrapper">
                   <Link to="/">

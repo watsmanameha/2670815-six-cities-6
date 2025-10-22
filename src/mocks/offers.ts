@@ -1,123 +1,119 @@
 export type Offer = {
   id: string;
   title: string;
-  type: 'Apartment' | 'Room' | 'House' | 'Studio';
-  price: number; // per night
-  rating: number; // 0..5
-  isPremium?: boolean;
-  isBookmarked?: boolean;
-  city: string;
-  previewImage: string;
-  images?: string[];
-  bedrooms?: number;
-  maxAdults?: number;
-  description?: string;
-  goods?: string[];
-  host?: {
-    id: string;
+  type: string;
+  price: number;
+  city: {
     name: string;
-    isPro?: boolean;
-    avatarUrl?: string;
+    location: {
+      latitude: number;
+      longitude: number;
+      zoom: number;
+    };
   };
-  location?: {
+  location: {
     latitude: number;
     longitude: number;
-    zoom?: number;
+    zoom: number;
   };
+  isFavorite: boolean;
+  isPremium: boolean;
+  rating: number;
+  previewImage: string;
 };
 
 export const OFFERS: Offer[] = [
   {
-    id: 'offer-1',
-    title: 'Cozy studio in the heart of Amsterdam',
-    type: 'Studio',
-    price: 90,
-    rating: 4.5,
+    id: 'b091e198-fb6a-4a92-95e0-2e681b8d7123',
+    title: 'Penthouse, 4-5 rooms + 5 balconies',
+    type: 'house',
+    price: 150,
+    city: {
+      name: 'Amsterdam',
+      location: {
+        latitude: 52.37454,
+        longitude: 4.897976,
+        zoom: 13,
+      },
+    },
+    location: {
+      latitude: 52.36554,
+      longitude: 4.911976,
+      zoom: 16,
+    },
+    isFavorite: false,
     isPremium: false,
-    isBookmarked: false,
-    city: 'Amsterdam',
-    previewImage: 'img/studio-01.jpg',
-    images: ['img/studio-01.jpg', 'img/apartment-01.jpg'],
-    bedrooms: 1,
-    maxAdults: 2,
-    description: 'A small cosy studio close to the canals and public transport.',
-    goods: ['Wi-Fi', 'Kitchen', 'Washing machine'],
-    host: {
-      id: 'host-1',
-      name: 'Anna',
-      isPro: true,
-      avatarUrl: 'img/avatar-angelina.jpg',
-    },
-    location: { latitude: 52.38333, longitude: 4.9, zoom: 12 },
+    rating: 2.2,
+    previewImage: 'https://14.design.htmlacademy.pro/static/hotel/9.jpg',
   },
   {
-    id: 'offer-2',
-    title: 'Large apartment near Rembrandtplein',
-    type: 'Apartment',
-    price: 180,
-    rating: 4.9,
+    id: '7669d6f9-b4cb-4b35-b9d6-b48bce4732a9',
+    title: 'House in countryside',
+    type: 'apartment',
+    price: 402,
+    city: {
+      name: 'Amsterdam',
+      location: {
+        latitude: 52.37454,
+        longitude: 4.897976,
+        zoom: 13,
+      },
+    },
+    location: {
+      latitude: 52.385540000000006,
+      longitude: 4.902976,
+      zoom: 16,
+    },
+    isFavorite: false,
     isPremium: true,
-    isBookmarked: true,
-    city: 'Amsterdam',
-    previewImage: 'img/apartment-03.jpg',
-    images: ['img/apartment-03.jpg', 'img/apartment-02.jpg'],
-    bedrooms: 3,
-    maxAdults: 6,
-    description: 'Spacious apartment with great views and modern amenities.',
-    goods: ['Wi-Fi', 'Dishwasher', 'Coffee machine', 'Heating'],
-    host: {
-      id: 'host-2',
-      name: 'Mark',
-      isPro: false,
-      avatarUrl: 'img/avatar-max.jpg',
-    },
-    location: { latitude: 52.3909553943508, longitude: 4.85309666406198, zoom: 12 },
+    rating: 2.5,
+    previewImage: 'https://14.design.htmlacademy.pro/static/hotel/16.jpg',
   },
   {
-    id: 'offer-3',
-    title: 'Quiet room in residential area',
-    type: 'Room',
-    price: 75,
-    rating: 4.1,
+    id: '8cd54c8a-1977-42e0-a80a-405c6742d4e8',
+    title: 'The Joshua Tree House',
+    type: 'room',
+    price: 140,
+    city: {
+      name: 'Amsterdam',
+      location: {
+        latitude: 52.37454,
+        longitude: 4.897976,
+        zoom: 13,
+      },
+    },
+    location: {
+      latitude: 52.397540000000006,
+      longitude: 4.9099759999999995,
+      zoom: 16,
+    },
+    isFavorite: false,
     isPremium: false,
-    isBookmarked: false,
-    city: 'Cologne',
-    previewImage: 'img/room.jpg',
-    images: ['img/room.jpg'],
-    bedrooms: 1,
-    maxAdults: 2,
-    description: 'Comfortable single room, perfect for business travelers.',
-    goods: ['Wi-Fi', 'Fridge'],
-    host: {
-      id: 'host-3',
-      name: 'Julia',
-      isPro: false,
-      avatarUrl: 'img/avatar-angelina.jpg',
-    },
-    location: { latitude: 50.9375, longitude: 6.9603, zoom: 12 },
+    rating: 4.2,
+    previewImage: 'https://14.design.htmlacademy.pro/static/hotel/11.jpg',
   },
   {
-    id: 'offer-4',
-    title: 'Modern house with garden',
-    type: 'House',
-    price: 220,
-    rating: 5,
-    isPremium: true,
-    isBookmarked: false,
-    city: 'Hamburg',
-    previewImage: 'img/apartment-02.jpg',
-    images: ['img/apartment-02.jpg', 'img/apartment-01.jpg'],
-    bedrooms: 4,
-    maxAdults: 8,
-    description: 'A modern family house with a large backyard and fast internet.',
-    goods: ['Wi-Fi', 'Parking', 'Kitchen', 'Heating'],
-    host: {
-      id: 'host-4',
-      name: 'Oliver',
-      isPro: true,
-      avatarUrl: 'img/avatar-max.jpg',
+    id: 'c571c0d3-4c0c-45c2-8471-7d378c9640cb',
+    title: 'Beautiful & luxurious apartment at great location',
+    type: 'apartment',
+    price: 170,
+    city: {
+      name: 'Amsterdam',
+      location: {
+        latitude: 52.37454,
+        longitude: 4.897976,
+        zoom: 13,
+      },
     },
-    location: { latitude: 53.5511, longitude: 9.9937, zoom: 12 },
+    location: {
+      latitude: 52.37454,
+      longitude: 4.881976,
+      zoom: 16,
+    },
+    isFavorite: false,
+    isPremium: true,
+    rating: 3,
+    previewImage: 'https://14.design.htmlacademy.pro/static/hotel/14.jpg',
   },
 ];
 
