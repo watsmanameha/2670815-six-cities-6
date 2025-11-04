@@ -47,7 +47,7 @@ jobs:
           branch: gh-pages
           folder: dist
           target_folder: ${{ env.DEPLOY_PATH }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.DEPLOY_TOKEN }}
 
       - name: Comment PR with preview URL
         if: github.event_name == 'pull_request'
