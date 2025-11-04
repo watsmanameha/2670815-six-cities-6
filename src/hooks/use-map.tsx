@@ -22,6 +22,9 @@ function useMap(
 
   useEffect(() => {
     if (mapRef.current !== null && !isRenderedRef.current) {
+      // debug: creation
+      // eslint-disable-next-line no-console
+      console.debug('[useMap] creating Leaflet map on', mapRef.current, 'city:', city);
       const instance = new LeafletMap(mapRef.current, {
         center: [city.location.latitude, city.location.longitude],
         zoom: city.location.zoom
@@ -38,6 +41,8 @@ function useMap(
       instance.addLayer(layer);
       setMap(instance);
       isRenderedRef.current = true;
+      // eslint-disable-next-line no-console
+      console.debug('[useMap] Leaflet instance created:', instance);
     }
   }, [mapRef, city]);
 

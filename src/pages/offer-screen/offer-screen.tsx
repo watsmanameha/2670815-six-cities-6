@@ -21,6 +21,7 @@ const OfferScreen: FC = () => {
   const ratingWidth = getRatingWidth(offer.rating);
   const reviews = REVIEWS;
   const nearby = OFFERS.filter((o) => o.id !== offer.id).slice(0, 3);
+  const points = nearby.map((p) => ({ title: p.title, lat: p.location.latitude, lng: p.location.longitude }));
 
   return (
     <div className="page">
@@ -141,14 +142,14 @@ const OfferScreen: FC = () => {
                 <ReviewForm />
               </ReviewsList>
             </div>
+            <section className="offer__map map">
+              <Map
+                city={offer.city}
+                points={points}
+                selectedPoint={undefined}
+              />
+            </section>
           </div>
-          <section className="offer__map map">
-            <Map
-              city={offer.city}
-              points={nearby.map((p) => ({ title: p.title, lat: p.location.latitude, lng: p.location.longitude }))}
-              selectedPoint={undefined}
-            />
-          </section>
         </section>
         <div className="container">
           <section className="near-places places">

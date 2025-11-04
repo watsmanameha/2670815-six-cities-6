@@ -32,6 +32,8 @@ const Map: FC<MapProps> = (props) => {
 
   useEffect(() => {
     if (map) {
+      // eslint-disable-next-line no-console
+      console.debug('[Map] map ready, points:', points, 'selected:', selectedPoint);
       const markerLayer = layerGroup().addTo(map);
       points.forEach((point) => {
         const marker = new Marker({
@@ -54,7 +56,7 @@ const Map: FC<MapProps> = (props) => {
     }
   }, [map, points, selectedPoint]);
 
-  return <div className="cities__map" ref={mapRef}></div>;
+  return <div className="cities__map" ref={mapRef} style={{ height: '100%' }}></div>;
 };
 
 export default Map;
