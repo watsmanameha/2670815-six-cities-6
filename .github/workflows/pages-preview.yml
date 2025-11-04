@@ -1,0 +1,51 @@
+name: Pages Preview (deploy per-branch)
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Compute deploy path
+        shell: bash
+        run: |
+          if [ -n "${GITHUB_HEAD_REF}" ]; then
+            echo "DEPLOY_PATH=previews/${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+          else
+            BRANCH=${GITHUB_REF#refs/heads/}
+            echo "DEPLOY_PATH=previews/${BRANCH}" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.0
+        with:
+          branch: gh-pages
+          folder: dist
+          target_folder: ${{ env.DEPLOY_PATH }}
+          token: ${{ secrets.GITHUB_TOKEN }}
