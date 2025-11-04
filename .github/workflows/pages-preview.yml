@@ -14,7 +14,6 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: github-pages
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,3 +48,16 @@ jobs:
           folder: dist
           target_folder: ${{ env.DEPLOY_PATH }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment PR with preview URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pr = context.payload.pull_request.number;
+            const url = `https://${owner}.github.io/${repo}/${process.env.DEPLOY_PATH}/`;
+            const body = `Preview for this PR: ${url}`;
+            await github.rest.issues.createComment({ owner, repo, issue_number: pr, body });
