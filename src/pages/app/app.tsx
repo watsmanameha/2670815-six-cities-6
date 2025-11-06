@@ -10,13 +10,13 @@ import OfferScreen from '../offer-screen/offer-screen';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
 import PrivateRoute from '../private-route/private-route';
 
-const App: FC<AppProps> = ({ store, offersCount, offers }) => (
+const App: FC<AppProps> = ({ store, offers }) => (
   <Provider store={store}>
     <BrowserRouter>
       <Routes>
         <Route
           path="/"
-          element={<MainScreen offersCount={offersCount} offers={offers} />}
+          element={<MainScreen offers={offers} />}
         />
         <Route path="/login" element={<LoginScreen />} />
         <Route

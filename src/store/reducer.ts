@@ -8,7 +8,7 @@ type OffersState = {
 };
 
 const initialState: OffersState = {
-  currentCity: 'Amsterdam',
+  currentCity: 'Paris',
   offers: [],
 };
 
