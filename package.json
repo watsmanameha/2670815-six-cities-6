@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest --passWithNoTests",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic --project-token=chpt_941f2a5a6100556"
   },
   "dependencies": {
     "@reduxjs/toolkit": "1.9.7",
