@@ -47,9 +47,6 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            📚 **Storybook deployed!**
-            View Storybook: ${{ steps.chromatic.outputs.storybookUrl }}
-
             💻 **Open in CodeSandbox:**
             https://githubbox.com/${{ github.repository }}/tree/${{ github.head_ref }}
           pr_number: ${{ github.event.pull_request.number }}
