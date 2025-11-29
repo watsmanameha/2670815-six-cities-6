@@ -1,5 +1,7 @@
 import type { FC } from 'react';
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
 import { getRatingWidth } from '../place-card/utils';
 import ReviewsList from '../../components/review/reviews-list';
@@ -7,20 +9,44 @@ import { REVIEWS } from '../../components/review/constants';
 import ReviewForm from '../review-form/review-form';
 import Map from '../../components/map/map';
 import NearbyOffers from '../../components/nearby-offers/nearby-offers';
+import Spinner from '../../components/spinner/spinner';
+import { fetchOffer } from '../../store/action';
+import type { AppDispatch, RootState } from '../../store';
 
 const OfferScreen: FC = () => {
-  useParams<{ id: string }>();
-  // TODO: Load offer from server
-  const offer = null;
+  const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch<AppDispatch>();
 
-  if (!offer) {
+  const offer = useSelector((state: RootState) => state.currentOffer);
+  const isOfferLoading = useSelector((state: RootState) => state.isOfferLoading);
+  const hasOfferError = useSelector((state: RootState) => state.hasOfferError);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchOffer(id));
+    }
+  }, [dispatch, id]);
+
+  if (isOfferLoading) {
+    return (
+      <div className="page">
+        <main className="page__main">
+          <div className="container">
+            <Spinner />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (hasOfferError || !offer) {
     return <NotFoundScreen />;
   }
 
   const images = [offer.previewImage];
   const ratingWidth = getRatingWidth(offer.rating);
   const reviews = REVIEWS;
-  const nearby = [];
+  const nearby: any[] = [];
   const points = nearby.map((p: any) => ({ id: p.id, title: p.title, lat: p.location.latitude, lng: p.location.longitude }));
 
   return (

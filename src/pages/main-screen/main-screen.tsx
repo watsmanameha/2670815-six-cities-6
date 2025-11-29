@@ -5,21 +5,20 @@
  */
 import { type FC, useMemo } from 'react';
 import OffersList from '../offers-list/offers-list';
-import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
 import type { Point } from '../../components/map/types';
 import Map from '../../components/map/map';
 import CitiesList from '../../components/cities-list/cities-list';
+import Spinner from '../../components/spinner/spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCity } from '../../store/action';
 import type { RootState } from '../../store';
 
-type MainScreenProps = {
-  offers: Offer[];
-};
-
-const MainScreen: FC<MainScreenProps> = ({ offers }) => {
+const MainScreen: FC = () => {
   const currentCity = useSelector((state: RootState) => state.currentCity);
+  const offers = useSelector((state: RootState) => state.offers);
+  const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
+  const hasError = useSelector((state: RootState) => state.hasError);
   const dispatch = useDispatch();
 
   const filteredOffers = useMemo(() => (
@@ -28,6 +27,7 @@ const MainScreen: FC<MainScreenProps> = ({ offers }) => {
 
   const points = useMemo<Point[]>(() => (
     filteredOffers.map((o) => ({
+      id: o.id,
       title: o.title,
       lat: o.location.latitude,
       lng: o.location.longitude,
@@ -35,6 +35,37 @@ const MainScreen: FC<MainScreenProps> = ({ offers }) => {
   ), [filteredOffers]);
 
   const city = filteredOffers[0]?.city || offers[0]?.city;
+
+  if (hasError) {
+    return (
+      <div className="page page--gray page--main">
+        <main className="page__main page__main--index">
+          <div className="cities">
+            <div className="cities__places-container container">
+              <section className="cities__places places">
+                <h2>Ошибка загрузки данных</h2>
+                <p>Не удалось загрузить список предложений. Проверьте подключение к интернету и попробуйте обновить страницу.</p>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (isOffersLoading) {
+    return (
+      <div className="page page--gray page--main">
+        <main className="page__main page__main--index">
+          <div className="cities">
+            <div className="cities__places-container container">
+              <Spinner />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="page page--gray page--main">
