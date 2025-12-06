@@ -31,26 +31,12 @@ const amsterdamCity: Offer['city'] = {
   },
 };
 
-const points: Points = [
-  {
-    id: '1',
-    title: 'Beautiful & luxurious apartment',
-    lat: 52.3909553943508,
-    lng: 4.85309666406198,
-  },
-  {
-    id: '2',
-    title: 'Wood and stone place',
-    lat: 52.3609553943508,
-    lng: 4.85309666406198,
-  },
-  {
-    id: '3',
-    title: 'Canal view prinsengracht',
-    lat: 52.3909553943508,
-    lng: 4.929309666406198,
-  },
-];
+const points: Points = OFFERS.map((offer) => ({
+  id: offer.id,
+  title: offer.title,
+  lat: offer.location.latitude,
+  lng: offer.location.longitude,
+}));
 
 export const Default: Story = {
   args: {
