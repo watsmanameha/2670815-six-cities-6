@@ -1,7 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { Offer } from '../types/offer';
 import { AuthorizationStatus, UserData } from '../types/auth';
-import { setCity, setOffers, setAuthorizationStatus, fetchOffers, fetchOffer, fetchNearbyOffers, checkAuth, login, logout } from './action';
+import { Comment } from '../types/comment';
+import { setCity, setOffers, setAuthorizationStatus, fetchOffers, fetchOffer, fetchNearbyOffers, checkAuth, login, logout, fetchComments, postComment } from './action';
 
 export type OffersState = {
   currentCity: string;
@@ -14,6 +15,10 @@ export type OffersState = {
   nearbyOffers: Offer[];
   isNearbyOffersLoading: boolean;
   hasNearbyOffersError: boolean;
+  comments: Comment[];
+  isCommentsLoading: boolean;
+  hasCommentsError: boolean;
+  isCommentPosting: boolean;
   authorizationStatus: AuthorizationStatus;
   user: UserData | null;
 };
@@ -29,6 +34,10 @@ const initialState: OffersState = {
   nearbyOffers: [],
   isNearbyOffersLoading: false,
   hasNearbyOffersError: false,
+  comments: [],
+  isCommentsLoading: false,
+  hasCommentsError: false,
+  isCommentPosting: false,
   authorizationStatus: AuthorizationStatus.Unknown,
   user: null,
 };
@@ -97,6 +106,28 @@ const reducer = createReducer(initialState, (builder) => {
     .addCase(logout.fulfilled, (state) => {
       state.authorizationStatus = AuthorizationStatus.NoAuth;
       state.user = null;
+    })
+    .addCase(fetchComments.pending, (state) => {
+      state.isCommentsLoading = true;
+      state.hasCommentsError = false;
+    })
+    .addCase(fetchComments.fulfilled, (state, action) => {
+      state.comments = action.payload;
+      state.isCommentsLoading = false;
+    })
+    .addCase(fetchComments.rejected, (state) => {
+      state.isCommentsLoading = false;
+      state.hasCommentsError = true;
+    })
+    .addCase(postComment.pending, (state) => {
+      state.isCommentPosting = true;
+    })
+    .addCase(postComment.fulfilled, (state, action) => {
+      state.comments.push(action.payload);
+      state.isCommentPosting = false;
+    })
+    .addCase(postComment.rejected, (state) => {
+      state.isCommentPosting = false;
     });
 });
 

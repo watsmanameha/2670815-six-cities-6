@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
 import { getRatingWidth } from '../place-card/utils';
 import ReviewsList from '../../components/review/reviews-list';
-import { REVIEWS } from '../../components/review/constants';
 import ReviewForm from '../review-form/review-form';
 import Map from '../../components/map/map';
 import NearbyOffers from '../../components/nearby-offers/nearby-offers';
 import Spinner from '../../components/spinner/spinner';
 import Header from '../../components/header/header';
-import { fetchOffer, fetchNearbyOffers } from '../../store/action';
+import { fetchOffer, fetchNearbyOffers, fetchComments } from '../../store/action';
+import { AuthorizationStatus } from '../../types/auth';
 import type { AppDispatch, RootState } from '../../store';
 
 const OfferScreen: FC = () => {
@@ -22,11 +22,14 @@ const OfferScreen: FC = () => {
   const isOfferLoading = useSelector((state: RootState) => state.isOfferLoading);
   const hasOfferError = useSelector((state: RootState) => state.hasOfferError);
   const nearbyOffers = useSelector((state: RootState) => state.nearbyOffers);
+  const comments = useSelector((state: RootState) => state.comments);
+  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
 
   useEffect(() => {
     if (id) {
       dispatch(fetchOffer(id));
       dispatch(fetchNearbyOffers(id));
+      dispatch(fetchComments(id));
     }
   }, [dispatch, id]);
 
@@ -48,7 +51,7 @@ const OfferScreen: FC = () => {
 
   const images = offer.images && offer.images.length > 0 ? offer.images : [offer.previewImage];
   const ratingWidth = getRatingWidth(offer.rating);
-  const reviews = REVIEWS;
+  const isAuthorized = authorizationStatus === AuthorizationStatus.Auth;
 
   const points = [
     {
@@ -146,8 +149,8 @@ const OfferScreen: FC = () => {
                   )}
                 </div>
               )}
-              <ReviewsList reviews={reviews}>
-                <ReviewForm />
+              <ReviewsList reviews={comments}>
+                {isAuthorized && id && <ReviewForm offerId={id} />}
               </ReviewsList>
             </div>
             <section className="offer__map map">

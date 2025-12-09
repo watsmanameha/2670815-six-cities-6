@@ -1,9 +1,9 @@
 import type { FC, ReactNode } from 'react';
 import Review from './review';
-import type { ReviewType } from './types';
+import type { Comment } from '../../types/comment';
 
 type ReviewsListProps = {
-  reviews: ReviewType[];
+  reviews: Comment[];
   children?: ReactNode;
 };
 
