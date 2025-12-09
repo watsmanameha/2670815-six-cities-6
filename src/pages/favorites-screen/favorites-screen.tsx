@@ -1,6 +1,6 @@
 // src/pages/favorites-screen/favorites-screen.tsx
 import type { FC } from 'react';
-import type { Offer } from '../../mocks/offers';
+import type { Offer } from '../../types/offer';
 import OffersList from '../offers-list/offers-list';
 import { Link } from 'react-router-dom';
 

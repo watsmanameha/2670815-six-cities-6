@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { getRatingWidth } from './utils';
-import type { Offer } from '../../mocks/offers';
+import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
 
 type PlaceCardProps = {

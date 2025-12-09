@@ -5,31 +5,30 @@
  */
 import { type FC, useMemo, useState } from 'react';
 import OffersList from '../offers-list/offers-list';
-import type { Offer } from '../../mocks/offers';
 import { Link } from 'react-router-dom';
 import type { Point } from '../../components/map/types';
 import Map from '../../components/map/map';
 import CitiesList from '../../components/cities-list/cities-list';
-import SortingOptions from '../../components/sorting-options/sorting-options';
-import { DEFAULT_SORTING } from '../../components/sorting-options/constants';
-import type { SortingOption } from '../../components/sorting-options/types';
-import { sortOffers } from '../../components/sorting-options/utils';
+import Spinner from '../../components/spinner/spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCity } from '../../store/action';
 import type { RootState } from '../../store';
+import type { SortingOption } from '../../components/sorting-options/types';
+import { DEFAULT_SORTING } from '../../components/sorting-options/constants';
+import { sortOffers } from '../../components/sorting-options/utils';
+import SortingOptions from '../../components/sorting-options/sorting-options';
 
-type MainScreenProps = {
-  offers: Offer[];
-};
-
-const MainScreen: FC<MainScreenProps> = ({ offers }) => {
+const MainScreen: FC = () => {
   const currentCity = useSelector((state: RootState) => state.currentCity);
+  const offers = useSelector((state: RootState) => state.offers);
+  const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
+  const hasError = useSelector((state: RootState) => state.hasError);
   const dispatch = useDispatch();
   const [currentSorting, setCurrentSorting] = useState<SortingOption>(DEFAULT_SORTING);
   const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
 
   const filteredOffers = useMemo(() => (
-    offers.filter((o) => o.city.name === currentCity)
+    offers.filter((offer) => offer.city.name === currentCity)
   ), [offers, currentCity]);
 
   const sortedOffers = useMemo(() => (
@@ -37,11 +36,11 @@ const MainScreen: FC<MainScreenProps> = ({ offers }) => {
   ), [filteredOffers, currentSorting]);
 
   const points = useMemo<Point[]>(() => (
-    sortedOffers.map((o) => ({
-      id: o.id,
-      title: o.title,
-      lat: o.location.latitude,
-      lng: o.location.longitude,
+    sortedOffers.map((offer) => ({
+      id: offer.id,
+      title: offer.title,
+      lat: offer.location.latitude,
+      lng: offer.location.longitude,
     }))
   ), [sortedOffers]);
 
@@ -50,6 +49,37 @@ const MainScreen: FC<MainScreenProps> = ({ offers }) => {
   ), [selectedOfferId, points]);
 
   const city = sortedOffers[0]?.city || offers[0]?.city;
+
+  if (hasError) {
+    return (
+      <div className="page page--gray page--main">
+        <main className="page__main page__main--index">
+          <div className="cities">
+            <div className="cities__places-container container">
+              <section className="cities__places places">
+                <h2>Ошибка загрузки данных</h2>
+                <p>Не удалось загрузить список предложений. Проверьте подключение к интернету и попробуйте обновить страницу.</p>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (isOffersLoading) {
+    return (
+      <div className="page page--gray page--main">
+        <main className="page__main page__main--index">
+          <div className="cities">
+            <div className="cities__places-container container">
+              <Spinner />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="page page--gray page--main">

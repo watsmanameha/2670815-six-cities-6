@@ -1,6 +1,7 @@
 import type { FC } from 'react';
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import OFFERS from '../../mocks/offers';
+import { useDispatch, useSelector } from 'react-redux';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
 import { getRatingWidth } from '../place-card/utils';
 import ReviewsList from '../../components/review/reviews-list';
@@ -8,20 +9,60 @@ import { REVIEWS } from '../../components/review/constants';
 import ReviewForm from '../review-form/review-form';
 import Map from '../../components/map/map';
 import NearbyOffers from '../../components/nearby-offers/nearby-offers';
+import Spinner from '../../components/spinner/spinner';
+import { fetchOffer, fetchNearbyOffers } from '../../store/action';
+import type { AppDispatch, RootState } from '../../store';
 
 const OfferScreen: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const offer = OFFERS.find((o) => o.id === id);
+  const dispatch = useDispatch<AppDispatch>();
 
-  if (!offer) {
+  const offer = useSelector((state: RootState) => state.currentOffer);
+  const isOfferLoading = useSelector((state: RootState) => state.isOfferLoading);
+  const hasOfferError = useSelector((state: RootState) => state.hasOfferError);
+  const nearbyOffers = useSelector((state: RootState) => state.nearbyOffers);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchOffer(id));
+      dispatch(fetchNearbyOffers(id));
+    }
+  }, [dispatch, id]);
+
+  if (isOfferLoading) {
+    return (
+      <div className="page">
+        <main className="page__main">
+          <div className="container">
+            <Spinner />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (hasOfferError || !offer) {
     return <NotFoundScreen />;
   }
 
-  const images = [offer.previewImage];
+  const images = offer.images && offer.images.length > 0 ? offer.images : [offer.previewImage];
   const ratingWidth = getRatingWidth(offer.rating);
   const reviews = REVIEWS;
-  const nearby = OFFERS.filter((o) => o.id !== offer.id).slice(0, 3);
-  const points = nearby.map((p) => ({ id: p.id, title: p.title, lat: p.location.latitude, lng: p.location.longitude }));
+
+  const points = [
+    {
+      id: offer.id,
+      title: offer.title,
+      lat: offer.location.latitude,
+      lng: offer.location.longitude,
+    },
+    ...nearbyOffers.map((p) => ({
+      id: p.id,
+      title: p.title,
+      lat: p.location.latitude,
+      lng: p.location.longitude,
+    })),
+  ];
 
   return (
     <div className="page">
@@ -103,41 +144,44 @@ const OfferScreen: FC = () => {
               </div>
               <ul className="offer__features">
                 <li className="offer__feature offer__feature--entire">{offer.type}</li>
-                {3 !== undefined && (
-                  <li className="offer__feature offer__feature--bedrooms">3 Bedrooms</li>
+                {offer.bedrooms !== undefined && (
+                  <li className="offer__feature offer__feature--bedrooms">{offer.bedrooms} Bedrooms</li>
                 )}
-                {4 !== undefined && (
-                  <li className="offer__feature offer__feature--adults">Max 4 adults</li>
+                {offer.maxAdults !== undefined && (
+                  <li className="offer__feature offer__feature--adults">Max {offer.maxAdults} adults</li>
                 )}
               </ul>
               <div className="offer__price">
                 <b className="offer__price-value">&euro;{offer.price}</b>
                 <span className="offer__price-text">&nbsp;night</span>
               </div>
-              <div className="offer__inside">
-                <h2 className="offer__inside-title">What&apos;s inside</h2>
-                <ul className="offer__inside-list">
-                  <li className="offer__inside-item">Wi-Fi</li>
-                  <li className="offer__inside-item">Washing machine</li>
-                  <li className="offer__inside-item">Towels</li>
-                  <li className="offer__inside-item">Heating</li>
-                  <li className="offer__inside-item">Coffee machine</li>
-                </ul>
-              </div>
-              <div className="offer__host">
-                <h2 className="offer__host-title">Meet the host</h2>
-                <div className="offer__host-user user">
-                  <div className="offer__avatar-wrapper offer__avatar-wrapper--pro user__avatar-wrapper">
-                    <img className="offer__avatar user__avatar" src="markup/img/avatar-angelina.jpg" width="74" height="74" alt="Host avatar" />
+              {offer.goods && offer.goods.length > 0 && (
+                <div className="offer__inside">
+                  <h2 className="offer__inside-title">What&apos;s inside</h2>
+                  <ul className="offer__inside-list">
+                    {offer.goods.map((good) => (
+                      <li key={good} className="offer__inside-item">{good}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {offer.host && (
+                <div className="offer__host">
+                  <h2 className="offer__host-title">Meet the host</h2>
+                  <div className="offer__host-user user">
+                    <div className={`offer__avatar-wrapper ${offer.host.isPro ? 'offer__avatar-wrapper--pro' : ''} user__avatar-wrapper`}>
+                      <img className="offer__avatar user__avatar" src={offer.host.avatarUrl} width="74" height="74" alt="Host avatar" />
+                    </div>
+                    <span className="offer__user-name">{offer.host.name}</span>
+                    {offer.host.isPro && <span className="offer__user-status">Pro</span>}
                   </div>
-                  <span className="offer__user-name"> Angelina </span>
-                  <span className="offer__user-status"> Pro </span>
+                  {offer.description && (
+                    <div className="offer__description">
+                      <p className="offer__text">{offer.description}</p>
+                    </div>
+                  )}
                 </div>
-                <div className="offer__description">
-                  <p className="offer__text">A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam. The building is green and from 18th century.</p>
-                  <p className="offer__text">An independent House, strategically located between Rembrand Square and National Opera, but where the bustle of the city comes to rest in this alley flowery and colorful.</p>
-                </div>
-              </div>
+              )}
               <ReviewsList reviews={reviews}>
                 <ReviewForm />
               </ReviewsList>
@@ -154,7 +198,7 @@ const OfferScreen: FC = () => {
         <div className="container">
           <section className="near-places places">
             <h2 className="near-places__title">Other places in the neighbourhood</h2>
-            <NearbyOffers offers={nearby} />
+            <NearbyOffers offers={nearbyOffers} />
           </section>
         </div>
       </main>

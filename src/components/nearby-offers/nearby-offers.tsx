@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import type { Offer } from '../../mocks/offers';
+import type { Offer } from '../../types/offer';
 import OffersList from '../../pages/offers-list/offers-list';
 
 type NearbyOffersProps = {
