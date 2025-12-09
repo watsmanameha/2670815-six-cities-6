@@ -3,7 +3,7 @@ import { Offer } from '../types/offer';
 import { AuthorizationStatus, UserData } from '../types/auth';
 import { setCity, setOffers, setAuthorizationStatus, fetchOffers, fetchOffer, fetchNearbyOffers, checkAuth, login, logout } from './action';
 
-type OffersState = {
+export type OffersState = {
   currentCity: string;
   offers: Offer[];
   isOffersLoading: boolean;
