@@ -91,3 +91,12 @@ export const toggleFavorite = createAsyncThunk<
   const { data } = await api.post<Offer>(`${APIRoute.Favorite}/${offerId}/${status}`);
   return data;
 });
+
+export const fetchFavorites = createAsyncThunk<
+  Offer[],
+  undefined,
+  { extra: AxiosInstance }
+>('data/fetchFavorites', async (_arg, { extra: api }) => {
+  const { data } = await api.get<Offer[]>(APIRoute.Favorite);
+  return data;
+});

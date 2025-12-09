@@ -1,71 +1,84 @@
-// src/pages/favorites-screen/favorites-screen.tsx
 import type { FC } from 'react';
-import type { Offer } from '../../types/offer';
-import OffersList from '../offers-list/offers-list';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import Header from '../../components/header/header';
+import PlaceCard from '../place-card/place-card';
+import Spinner from '../../components/spinner/spinner';
+import { fetchFavorites } from '../../store/action';
+import type { AppDispatch } from '../../store';
+import {
+  selectFavoritesByCity,
+  selectIsFavoritesLoading,
+  selectFavorites,
+} from '../../store/selectors';
 
-type FavoritesScreenProps = {
-  offers: Offer[];
-};
+const FavoritesScreen: FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const favoritesByCity = useSelector(selectFavoritesByCity);
+  const isFavoritesLoading = useSelector(selectIsFavoritesLoading);
+  const favorites = useSelector(selectFavorites);
 
-const FavoritesScreen: FC<FavoritesScreenProps> = ({ offers }) => {
-  // берём только избранные
-  const favs = offers.filter((o) => o.isFavorite);
+  useEffect(() => {
+    dispatch(fetchFavorites());
+  }, [dispatch]);
 
-  // группируем по названию города (строковый ключ!)
-  const groups = favs.reduce<Record<string, Offer[]>>((acc, offer) => {
-    const cityName = offer.city?.name ?? 'Unknown';
-    (acc[cityName] ??= []).push(offer);
-    return acc;
-  }, {});
+  if (isFavoritesLoading) {
+    return (
+      <div className="page">
+        <Header />
+        <main className="page__main page__main--favorites">
+          <div className="page__favorites-container container">
+            <Spinner />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const isEmpty = favorites.length === 0;
+
+  if (isEmpty) {
+    return (
+      <div className="page page--favorites-empty">
+        <Header />
+        <main className="page__main page__main--favorites page__main--favorites-empty">
+          <div className="page__favorites-container container">
+            <section className="favorites favorites--empty">
+              <h1 className="visually-hidden">Favorites (empty)</h1>
+              <div className="favorites__status-wrapper">
+                <b className="favorites__status">Nothing yet saved.</b>
+                <p className="favorites__status-description">
+                  Save properties to narrow down search or plan your future trips.
+                </p>
+              </div>
+            </section>
+          </div>
+        </main>
+        <footer className="footer">
+          <Link className="footer__logo-link" to="/">
+            <img
+              className="footer__logo"
+              src="img/logo.svg"
+              alt="6 cities logo"
+              width="64"
+              height="33"
+            />
+          </Link>
+        </footer>
+      </div>
+    );
+  }
 
   return (
     <div className="page">
-      <header className="header">
-        <div className="container">
-          <div className="header__wrapper">
-            <div className="header__left">
-              <Link className="header__logo-link" to="/">
-                <img
-                  className="header__logo"
-                  src="markup/img/logo.svg"
-                  alt="6 cities logo"
-                  width="81"
-                  height="41"
-                />
-              </Link>
-            </div>
-            <nav className="header__nav">
-              <ul className="header__nav-list">
-                <li className="header__nav-item user">
-                  <Link
-                    className="header__nav-link header__nav-link--profile"
-                    to="/favorites"
-                  >
-                    <div className="header__avatar-wrapper user__avatar-wrapper" />
-                    <span className="header__user-name user__name">
-                      Oliver.conner@gmail.com
-                    </span>
-                    <span className="header__favorite-count">{favs.length}</span>
-                  </Link>
-                </li>
-                <li className="header__nav-item">
-                  <Link className="header__nav-link" to="/login">
-                    <span className="header__signout">Sign out</span>
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </header>
-
+      <Header />
       <main className="page__main page__main--favorites">
         <div className="page__favorites-container container">
           <section className="favorites">
             <h1 className="favorites__title">Saved listing</h1>
             <ul className="favorites__list">
-              {Object.entries(groups).map(([cityName, cityOffers]) => (
+              {Object.entries(favoritesByCity).map(([cityName, cityOffers]) => (
                 <li className="favorites__locations-items" key={cityName}>
                   <div className="favorites__locations locations locations--current">
                     <div className="locations__item">
@@ -75,12 +88,14 @@ const FavoritesScreen: FC<FavoritesScreenProps> = ({ offers }) => {
                     </div>
                   </div>
                   <div className="favorites__places">
-                    <OffersList
-                      offers={cityOffers}
-                      className="favorites__places"
-                      imageWidth={150}
-                      imageHeight={110}
-                    />
+                    {cityOffers.map((offer) => (
+                      <PlaceCard
+                        key={offer.id}
+                        offer={offer}
+                        imageWidth={150}
+                        imageHeight={110}
+                      />
+                    ))}
                   </div>
                 </li>
               ))}
@@ -88,12 +103,11 @@ const FavoritesScreen: FC<FavoritesScreenProps> = ({ offers }) => {
           </section>
         </div>
       </main>
-
       <footer className="footer container">
         <Link className="footer__logo-link" to="/">
           <img
             className="footer__logo"
-            src="markup/img/logo.svg"
+            src="img/logo.svg"
             alt="6 cities logo"
             width="64"
             height="33"

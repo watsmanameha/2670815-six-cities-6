@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from './index';
 import { sortOffers } from '../components/sorting-options/utils';
 import type { SortingOption } from '../components/sorting-options/types';
+import type { Offer } from '../types/offer';
 
 // Базовые селекторы
 export const selectCurrentCity = (state: RootState) => state.offers.currentCity;
@@ -24,6 +25,10 @@ export const selectComments = (state: RootState) => state.comments.comments;
 export const selectIsCommentsLoading = (state: RootState) => state.comments.isCommentsLoading;
 export const selectHasCommentsError = (state: RootState) => state.comments.hasCommentsError;
 export const selectIsCommentPosting = (state: RootState) => state.comments.isCommentPosting;
+
+export const selectFavorites = (state: RootState) => state.favorites.favorites;
+export const selectIsFavoritesLoading = (state: RootState) => state.favorites.isFavoritesLoading;
+export const selectHasFavoritesError = (state: RootState) => state.favorites.hasFavoritesError;
 
 // Мемоизированные селекторы
 export const selectFilteredOffers = createSelector(
@@ -57,4 +62,19 @@ export const selectCurrentCityLocation = createSelector(
 export const selectOffersCount = createSelector(
   [selectFilteredOffers],
   (filteredOffers) => filteredOffers.length
+);
+
+export const selectFavoritesByCity = createSelector(
+  [selectFavorites],
+  (favorites) => {
+    const grouped = favorites.reduce<Record<string, Offer[]>>((acc, offer) => {
+      const cityName = offer.city.name;
+      if (!acc[cityName]) {
+        acc[cityName] = [];
+      }
+      acc[cityName].push(offer);
+      return acc;
+    }, {});
+    return grouped;
+  }
 );

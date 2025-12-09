@@ -3,6 +3,7 @@ import { createAPI } from '../services/api';
 import offersReducer from './slices/offers-slice';
 import userReducer from './slices/user-slice';
 import commentsReducer from './slices/comments-slice';
+import favoritesReducer from './slices/favorites-slice';
 
 const api = createAPI();
 
@@ -10,6 +11,7 @@ const rootReducer = combineReducers({
   offers: offersReducer,
   user: userReducer,
   comments: commentsReducer,
+  favorites: favoritesReducer,
 });
 
 export const store = configureStore({

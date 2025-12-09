@@ -32,7 +32,7 @@ const AppContent: FC = () => {
         path="/favorites"
         element={
           <PrivateRoute>
-            <FavoritesScreen offers={[]} />
+            <FavoritesScreen />
           </PrivateRoute>
         }
       />
