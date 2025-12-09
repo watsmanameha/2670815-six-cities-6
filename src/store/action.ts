@@ -1,12 +1,13 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { AxiosInstance } from 'axios';
 import { Offer } from '../types/offer';
-import { UserData, AuthData } from '../types/auth';
+import { UserData, AuthData, AuthorizationStatus } from '../types/auth';
 import { APIRoute } from '../services/api-routes';
 import { saveToken, dropToken } from '../services/api';
 
 export const setCity = createAction<string>('app/setCity');
 export const setOffers = createAction<Offer[]>('app/setOffers');
+export const setAuthorizationStatus = createAction<AuthorizationStatus>('user/setAuthorizationStatus');
 
 export const fetchOffers = createAsyncThunk<
   Offer[],

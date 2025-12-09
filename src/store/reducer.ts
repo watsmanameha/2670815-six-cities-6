@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { Offer } from '../types/offer';
 import { AuthorizationStatus, UserData } from '../types/auth';
-import { setCity, setOffers, fetchOffers, fetchOffer, fetchNearbyOffers, checkAuth, login, logout } from './action';
+import { setCity, setOffers, setAuthorizationStatus, fetchOffers, fetchOffer, fetchNearbyOffers, checkAuth, login, logout } from './action';
 
 type OffersState = {
   currentCity: string;
@@ -40,6 +40,9 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(setOffers, (state, action) => {
       state.offers = action.payload;
+    })
+    .addCase(setAuthorizationStatus, (state, action) => {
+      state.authorizationStatus = action.payload;
     })
     .addCase(fetchOffers.pending, (state) => {
       state.isOffersLoading = true;
