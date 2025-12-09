@@ -9,6 +9,7 @@ import { AuthorizationStatus } from '../../types/auth';
 const LoginScreen: FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
@@ -18,23 +19,26 @@ const LoginScreen: FC = () => {
     navigate('/');
   }
 
-  const handleSubmit = async (evt: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
+    setError(null);
 
     // Простая валидация пароля: минимум одна буква и одна цифра
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).+$/;
     if (!passwordRegex.test(password)) {
-      alert('Password must contain at least one letter and one number');
+      setError('Password must contain at least one letter and one number');
       return;
     }
 
-    try {
-      await dispatch(login({ login: email, password })).unwrap();
-      // После успешной авторизации перенаправляем на главную страницу
-      navigate('/');
-    } catch (error) {
-      alert('Login failed. Please check your credentials and try again.');
-    }
+    dispatch(login({ login: email, password }))
+      .unwrap()
+      .then(() => {
+        // После успешной авторизации перенаправляем на главную страницу
+        navigate('/');
+      })
+      .catch(() => {
+        setError('Login failed. Please check your credentials and try again.');
+      });
   };
 
   return (
@@ -86,6 +90,11 @@ const LoginScreen: FC = () => {
                   onChange={(evt) => setPassword(evt.target.value)}
                 />
               </div>
+              {error && (
+                <div style={{ color: 'red', marginBottom: '10px' }}>
+                  {error}
+                </div>
+              )}
               <button
                 className="login__submit form__submit button"
                 type="submit"
