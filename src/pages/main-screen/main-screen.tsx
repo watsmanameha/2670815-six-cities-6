@@ -3,7 +3,7 @@
  * Временная крупная монолитная версия, созданная на основе разметки из markup/main.html.
  * В дальнейшем будет декомпозирован на подкомпоненты.
  */
-import { type FC, useMemo, useState } from 'react';
+import { type FC, useMemo, useState, useCallback } from 'react';
 import OffersList from '../offers-list/offers-list';
 import type { Point } from '../../components/map/types';
 import Map from '../../components/map/map';
@@ -11,29 +11,29 @@ import CitiesList from '../../components/cities-list/cities-list';
 import Spinner from '../../components/spinner/spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCity } from '../../store/action';
-import type { RootState } from '../../store';
+import type { RootState, AppDispatch } from '../../store';
 import type { SortingOption } from '../../components/sorting-options/types';
 import { DEFAULT_SORTING } from '../../components/sorting-options/constants';
-import { sortOffers } from '../../components/sorting-options/utils';
 import SortingOptions from '../../components/sorting-options/sorting-options';
 import Header from '../../components/header/header';
+import {
+  selectCurrentCity,
+  selectIsOffersLoading,
+  selectHasError,
+  selectSortedOffers,
+  selectCurrentCityLocation,
+} from '../../store/selectors';
 
 const MainScreen: FC = () => {
-  const currentCity = useSelector((state: RootState) => state.currentCity);
-  const offers = useSelector((state: RootState) => state.offers);
-  const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
-  const hasError = useSelector((state: RootState) => state.hasError);
-  const dispatch = useDispatch();
   const [currentSorting, setCurrentSorting] = useState<SortingOption>(DEFAULT_SORTING);
   const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
 
-  const filteredOffers = useMemo(() => (
-    offers.filter((offer) => offer.city.name === currentCity)
-  ), [offers, currentCity]);
-
-  const sortedOffers = useMemo(() => (
-    sortOffers(filteredOffers, currentSorting)
-  ), [filteredOffers, currentSorting]);
+  const dispatch = useDispatch<AppDispatch>();
+  const currentCity = useSelector(selectCurrentCity);
+  const isOffersLoading = useSelector(selectIsOffersLoading);
+  const hasError = useSelector(selectHasError);
+  const sortedOffers = useSelector((state: RootState) => selectSortedOffers(state, currentSorting));
+  const city = useSelector(selectCurrentCityLocation);
 
   const points = useMemo<Point[]>(() => (
     sortedOffers.map((offer) => ({
@@ -48,7 +48,17 @@ const MainScreen: FC = () => {
     selectedOfferId ? points.find((p) => p.id === selectedOfferId) : undefined
   ), [selectedOfferId, points]);
 
-  const city = sortedOffers[0]?.city || offers[0]?.city;
+  const handleCityChange = useCallback((city: string) => {
+    dispatch(setCity(city));
+  }, [dispatch]);
+
+  const handleSortingChange = useCallback((sorting: SortingOption) => {
+    setCurrentSorting(sorting);
+  }, []);
+
+  const handleOfferHover = useCallback((offerId: string | null) => {
+    setSelectedOfferId(offerId);
+  }, []);
 
   if (hasError) {
     return (
@@ -91,7 +101,7 @@ const MainScreen: FC = () => {
           <CitiesList
             cities={['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf']}
             currentCity={currentCity}
-            onCityChange={(c) => dispatch(setCity(c))}
+            onCityChange={handleCityChange}
           />
         </div>
 
@@ -102,11 +112,11 @@ const MainScreen: FC = () => {
               <b className="places__found">{sortedOffers.length} places to stay in {currentCity}</b>
               <SortingOptions
                 currentSorting={currentSorting}
-                onSortingChange={setCurrentSorting}
+                onSortingChange={handleSortingChange}
               />
               <OffersList
                 offers={sortedOffers}
-                onActiveOfferChange={setSelectedOfferId}
+                onActiveOfferChange={handleOfferHover}
               />
             </section>
             <div className="cities__right-section">

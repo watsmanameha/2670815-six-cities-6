@@ -1,4 +1,4 @@
-import {useRef, useEffect, type FC} from 'react';
+import {useRef, useEffect, memo, type FC} from 'react';
 import {Icon, Marker, layerGroup} from 'leaflet';
 import useMap from '../../hooks/use-map';
 import {Offer} from '../../types/offer';
@@ -24,7 +24,7 @@ const currentCustomIcon = new Icon({
   iconAnchor: [20, 40]
 });
 
-const Map: FC<MapProps> = (props) => {
+const MapComponent: FC<MapProps> = (props) => {
   const {city, points, selectedPoint} = props;
 
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -59,4 +59,5 @@ const Map: FC<MapProps> = (props) => {
   return <div className="cities__map" ref={mapRef} style={{ height: '100%' }}></div>;
 };
 
+const Map = memo(MapComponent);
 export default Map;

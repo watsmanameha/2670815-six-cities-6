@@ -1,22 +1,24 @@
 import type { FC } from 'react';
+import { useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState, AppDispatch } from '../../store';
+import type { AppDispatch } from '../../store';
 import { logout } from '../../store/action';
 import { AuthorizationStatus } from '../../types/auth';
+import { selectAuthorizationStatus, selectUser } from '../../store/selectors';
 
 type HeaderProps = {
   isMainPage?: boolean;
 };
 
 const Header: FC<HeaderProps> = ({ isMainPage = false }) => {
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
-  const user = useSelector((state: RootState) => state.user);
+  const authorizationStatus = useSelector(selectAuthorizationStatus);
+  const user = useSelector(selectUser);
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     dispatch(logout());
-  };
+  }, [dispatch]);
 
   return (
     <header className="header">
@@ -89,4 +91,4 @@ const Header: FC<HeaderProps> = ({ isMainPage = false }) => {
   );
 };
 
-export default Header;
+export default memo(Header);

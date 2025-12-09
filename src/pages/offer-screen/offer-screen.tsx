@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
@@ -12,18 +12,26 @@ import Spinner from '../../components/spinner/spinner';
 import Header from '../../components/header/header';
 import { fetchOffer, fetchNearbyOffers, fetchComments } from '../../store/action';
 import { AuthorizationStatus } from '../../types/auth';
-import type { AppDispatch, RootState } from '../../store';
+import type { AppDispatch } from '../../store';
+import {
+  selectCurrentOffer,
+  selectIsOfferLoading,
+  selectHasOfferError,
+  selectNearbyOffers,
+  selectComments,
+  selectAuthorizationStatus,
+} from '../../store/selectors';
 
 const OfferScreen: FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
 
-  const offer = useSelector((state: RootState) => state.currentOffer);
-  const isOfferLoading = useSelector((state: RootState) => state.isOfferLoading);
-  const hasOfferError = useSelector((state: RootState) => state.hasOfferError);
-  const nearbyOffers = useSelector((state: RootState) => state.nearbyOffers);
-  const comments = useSelector((state: RootState) => state.comments);
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const offer = useSelector(selectCurrentOffer);
+  const isOfferLoading = useSelector(selectIsOfferLoading);
+  const hasOfferError = useSelector(selectHasOfferError);
+  const nearbyOffers = useSelector(selectNearbyOffers);
+  const comments = useSelector(selectComments);
+  const authorizationStatus = useSelector(selectAuthorizationStatus);
 
   useEffect(() => {
     if (id) {
@@ -32,6 +40,36 @@ const OfferScreen: FC = () => {
       dispatch(fetchComments(id));
     }
   }, [dispatch, id]);
+
+  const images = useMemo(() => {
+    if (!offer) {
+      return [];
+    }
+    return offer.images && offer.images.length > 0 ? offer.images : [offer.previewImage];
+  }, [offer]);
+
+  const ratingWidth = useMemo(() => (offer ? getRatingWidth(offer.rating) : '0%'), [offer]);
+  const isAuthorized = authorizationStatus === AuthorizationStatus.Auth;
+
+  const points = useMemo(() => {
+    if (!offer) {
+      return [];
+    }
+    return [
+      {
+        id: offer.id,
+        title: offer.title,
+        lat: offer.location.latitude,
+        lng: offer.location.longitude,
+      },
+      ...nearbyOffers.map((p) => ({
+        id: p.id,
+        title: p.title,
+        lat: p.location.latitude,
+        lng: p.location.longitude,
+      })),
+    ];
+  }, [offer, nearbyOffers]);
 
   if (isOfferLoading) {
     return (
@@ -48,25 +86,6 @@ const OfferScreen: FC = () => {
   if (hasOfferError || !offer) {
     return <NotFoundScreen />;
   }
-
-  const images = offer.images && offer.images.length > 0 ? offer.images : [offer.previewImage];
-  const ratingWidth = getRatingWidth(offer.rating);
-  const isAuthorized = authorizationStatus === AuthorizationStatus.Auth;
-
-  const points = [
-    {
-      id: offer.id,
-      title: offer.title,
-      lat: offer.location.latitude,
-      lng: offer.location.longitude,
-    },
-    ...nearbyOffers.map((p) => ({
-      id: p.id,
-      title: p.title,
-      lat: p.location.latitude,
-      lng: p.location.longitude,
-    })),
-  ];
 
   return (
     <div className="page">

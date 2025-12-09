@@ -1,8 +1,9 @@
 import type { FC, FormEvent, ChangeEvent } from 'react';
 import { useState, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from '../../store';
+import type { AppDispatch } from '../../store';
 import { postComment } from '../../store/action';
+import { selectIsCommentPosting } from '../../store/selectors';
 
 export type ReviewFormProps = {
   offerId: string;
@@ -18,7 +19,7 @@ const ReviewForm: FC<ReviewFormProps> = ({ offerId }) => {
   const [error, setError] = useState<string | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
-  const isCommentPosting = useSelector((state: RootState) => state.isCommentPosting);
+  const isCommentPosting = useSelector(selectIsCommentPosting);
 
   const handleRatingChange = useCallback((evt: ChangeEvent<HTMLInputElement>) => {
     const value = Number(evt.target.value);

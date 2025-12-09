@@ -2,7 +2,7 @@ import type { FC, ReactElement } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { AuthorizationStatus } from '../../types/auth';
-import type { RootState } from '../../store';
+import { selectAuthorizationStatus } from '../../store/selectors';
 
 type PrivateRouteProps = {
   children: ReactElement;
@@ -11,7 +11,7 @@ type PrivateRouteProps = {
 // PrivateRoute — обёртка для защищённых маршрутов.
 // Если пользователь не авторизован, перенаправляет на /login.
 const PrivateRoute: FC<PrivateRouteProps> = ({ children }) => {
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const authorizationStatus = useSelector(selectAuthorizationStatus);
 
   if (authorizationStatus !== AuthorizationStatus.Auth) {
     return <Navigate to="/login" replace />;

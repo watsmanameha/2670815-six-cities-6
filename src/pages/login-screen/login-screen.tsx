@@ -1,10 +1,11 @@
 import type { FC, FormEvent } from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from '../../store';
+import type { AppDispatch } from '../../store';
 import { login } from '../../store/action';
 import { AuthorizationStatus } from '../../types/auth';
+import { selectAuthorizationStatus } from '../../store/selectors';
 
 const LoginScreen: FC = () => {
   const [email, setEmail] = useState('');
@@ -12,12 +13,14 @@ const LoginScreen: FC = () => {
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const authorizationStatus = useSelector(selectAuthorizationStatus);
 
   // Если пользователь уже авторизован, перенаправляем на главную
-  if (authorizationStatus === AuthorizationStatus.Auth) {
-    navigate('/');
-  }
+  useEffect(() => {
+    if (authorizationStatus === AuthorizationStatus.Auth) {
+      navigate('/');
+    }
+  }, [authorizationStatus, navigate]);
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
