@@ -1,8 +1,9 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 const BASE_URL = 'https://14.design.htmlacademy.pro/six-cities';
 const REQUEST_TIMEOUT = 5000;
 const TOKEN_KEY = 'six-cities-token';
+const STATUS_CODE_UNAUTHORIZED = 401;
 
 export const getToken = (): string => {
   const token = localStorage.getItem(TOKEN_KEY);
@@ -32,6 +33,16 @@ export const createAPI = (): AxiosInstance => {
 
     return config;
   });
+
+  api.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError) => {
+      if (error.response?.status === STATUS_CODE_UNAUTHORIZED) {
+        dropToken();
+      }
+      return Promise.reject(error);
+    }
+  );
 
   return api;
 };

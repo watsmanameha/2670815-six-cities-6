@@ -10,13 +10,14 @@ import FavoritesScreen from '../favorites-screen/favorites-screen';
 import OfferScreen from '../offer-screen/offer-screen';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
 import PrivateRoute from '../private-route/private-route';
-import { fetchOffers } from '../../store/action';
+import { fetchOffers, checkAuth } from '../../store/action';
 import { AppDispatch } from '../../store';
 
 const AppContent: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    dispatch(checkAuth());
     dispatch(fetchOffers());
   }, [dispatch]);
 
@@ -30,7 +31,7 @@ const AppContent: FC = () => {
       <Route
         path="/favorites"
         element={
-          <PrivateRoute isAuthorized={false}>
+          <PrivateRoute>
             <FavoritesScreen offers={[]} />
           </PrivateRoute>
         }
