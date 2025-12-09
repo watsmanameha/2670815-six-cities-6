@@ -13,6 +13,10 @@ import Spinner from '../../components/spinner/spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCity } from '../../store/action';
 import type { RootState } from '../../store';
+import type { SortingOption } from '../../components/sorting-options/types';
+import { DEFAULT_SORTING } from '../../components/sorting-options/constants';
+import { sortOffers } from '../../components/sorting-options/utils';
+import SortingOptions from '../../components/sorting-options/sorting-options';
 
 const MainScreen: FC = () => {
   const currentCity = useSelector((state: RootState) => state.currentCity);
@@ -24,7 +28,7 @@ const MainScreen: FC = () => {
   const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
 
   const filteredOffers = useMemo(() => (
-    offers.filter((o) => o.city.name === currentCity)
+    offers.filter((offer) => offer.city.name === currentCity)
   ), [offers, currentCity]);
 
   const sortedOffers = useMemo(() => (
@@ -32,11 +36,11 @@ const MainScreen: FC = () => {
   ), [filteredOffers, currentSorting]);
 
   const points = useMemo<Point[]>(() => (
-    sortedOffers.map((o) => ({
-      id: o.id,
-      title: o.title,
-      lat: o.location.latitude,
-      lng: o.location.longitude,
+    sortedOffers.map((offer) => ({
+      id: offer.id,
+      title: offer.title,
+      lat: offer.location.latitude,
+      lng: offer.location.longitude,
     }))
   ), [sortedOffers]);
 

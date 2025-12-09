@@ -48,8 +48,21 @@ const OfferScreen: FC = () => {
   const images = offer.images && offer.images.length > 0 ? offer.images : [offer.previewImage];
   const ratingWidth = getRatingWidth(offer.rating);
   const reviews = REVIEWS;
-  const nearby = OFFERS.filter((o) => o.id !== offer.id).slice(0, 3);
-  const points = nearby.map((p) => ({ id: p.id, title: p.title, lat: p.location.latitude, lng: p.location.longitude }));
+
+  const points = [
+    {
+      id: offer.id,
+      title: offer.title,
+      lat: offer.location.latitude,
+      lng: offer.location.longitude,
+    },
+    ...nearbyOffers.map((p) => ({
+      id: p.id,
+      title: p.title,
+      lat: p.location.latitude,
+      lng: p.location.longitude,
+    })),
+  ];
 
   return (
     <div className="page">
