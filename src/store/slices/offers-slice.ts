@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Offer } from '../../types/offer';
-import { fetchOffers, fetchOffer, fetchNearbyOffers } from '../action';
+import { fetchOffers, fetchOffer, fetchNearbyOffers, toggleFavorite } from '../action';
 
 type OffersSliceState = {
   currentCity: string;
@@ -76,6 +76,26 @@ const offersSlice = createSlice({
       .addCase(fetchNearbyOffers.rejected, (state) => {
         state.isNearbyOffersLoading = false;
         state.hasNearbyOffersError = true;
+      })
+      .addCase(toggleFavorite.fulfilled, (state, action) => {
+        const updatedOffer = action.payload;
+
+        // Обновляем в основном списке предложений
+        const offerIndex = state.offers.findIndex((offer) => offer.id === updatedOffer.id);
+        if (offerIndex !== -1) {
+          state.offers[offerIndex] = updatedOffer;
+        }
+
+        // Обновляем текущее предложение, если оно совпадает
+        if (state.currentOffer && state.currentOffer.id === updatedOffer.id) {
+          state.currentOffer = updatedOffer;
+        }
+
+        // Обновляем в списке ближайших предложений, если оно там есть
+        const nearbyIndex = state.nearbyOffers.findIndex((offer) => offer.id === updatedOffer.id);
+        if (nearbyIndex !== -1) {
+          state.nearbyOffers[nearbyIndex] = updatedOffer;
+        }
       });
   },
 });

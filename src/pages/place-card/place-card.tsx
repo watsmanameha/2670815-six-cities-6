@@ -1,7 +1,14 @@
 import type { FC } from 'react';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { getRatingWidth } from './utils';
 import type { Offer } from '../../types/offer';
 import { Link } from 'react-router-dom';
+import { toggleFavorite } from '../../store/action';
+import { AppDispatch } from '../../store';
+import { selectAuthorizationStatus } from '../../store/selectors';
+import { AuthorizationStatus } from '../../types/auth';
 
 type PlaceCardProps = {
   offer?: Offer;
@@ -28,6 +35,10 @@ const PlaceCard: FC<PlaceCardProps> = ({
   imageWidth = 260,
   imageHeight = 200,
 }: PlaceCardProps) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const authorizationStatus = useSelector(selectAuthorizationStatus);
+
   const finalTitle = offer?.title ?? title ?? '';
   const finalType = offer?.type ?? type ?? '';
   const finalPrice = offer?.price ?? price ?? 0;
@@ -36,6 +47,18 @@ const PlaceCard: FC<PlaceCardProps> = ({
   const finalIsBookmarked = offer?.isFavorite ?? isBookmarked;
   const finalImage = offer?.previewImage ?? imageSrc ?? '';
   const offerPath = offer?.id ? `/offer/${offer.id}` : '#';
+
+  const handleBookmarkClick = useCallback(() => {
+    if (authorizationStatus !== AuthorizationStatus.Auth) {
+      navigate('/login');
+      return;
+    }
+
+    if (offer?.id) {
+      const status = finalIsBookmarked ? 0 : 1;
+      dispatch(toggleFavorite({ offerId: offer.id, status }));
+    }
+  }, [authorizationStatus, navigate, offer?.id, finalIsBookmarked, dispatch]);
 
   return (
     <article className="cities__card place-card">
@@ -66,6 +89,7 @@ const PlaceCard: FC<PlaceCardProps> = ({
           <button
             className={`place-card__bookmark-button button${finalIsBookmarked ? ' place-card__bookmark-button--active' : ''}`}
             type="button"
+            onClick={handleBookmarkClick}
           >
             <svg className="place-card__bookmark-icon" width="18" height="19">
               <use xlinkHref="#icon-bookmark"></use>
